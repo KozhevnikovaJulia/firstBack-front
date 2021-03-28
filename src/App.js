@@ -6,13 +6,25 @@ function App() {
   const userNameRef = React.createRef()
   const [users, setUsers] = useState([])
   const getUsers = () => {
-    Axios.get("http://localhost:7777/users").then(res => {
+    Axios.get("http://localhost:7777/users" + window.location.search).then(res => {
       setUsers(res.data)
     })
   }
   
   const createUser = () => {
     Axios.post("http://localhost:7777/users", {name: userNameRef.current.value}).then(res => {
+      getUsers()
+    })
+  }
+
+  const updateUser = (id, name) => {
+    Axios.put("http://localhost:7777/users", {id, name}).then(res => {
+      getUsers()
+    })
+  }
+
+  const deleteUser = (id) => {
+    Axios.delete(`http://localhost:7777/users/${id}` ).then(res => {
       getUsers()
     })
   }
@@ -23,7 +35,7 @@ function App() {
     <>
     <input ref={userNameRef}/>
     <div><button onClick={createUser}>Create user</button></div>
-{users.map(user => <div>{user.name}</div>)}
+{users.map(user => <div><input defaultValue={user.name} onBlur={(e)=>{updateUser(user._id, e.currentTarget.value)}}/><button onClick ={()=>{deleteUser(user._id)}}>X</button></div>)}
     </>
   );
 }
